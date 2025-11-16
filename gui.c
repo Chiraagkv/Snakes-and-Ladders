@@ -1,5 +1,5 @@
 // gui_snakes_and_ladders.c gcc -o s_and_l gui_snakes_and_ladders.c -lraylib -lm -ldl -lpthread -lrt -lX11
-
+// Made by Chiraag, Utkarsh and Naksh
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
