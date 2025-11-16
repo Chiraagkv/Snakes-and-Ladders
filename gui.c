@@ -12,7 +12,7 @@ int N_SNAKES = 5;
 int N_LADDERS = 5;
 #define MAX_PLAYERS 6
 int enteringNames = 1;
-char inputBuffers[MAX_PLAYERS][20];
+char inputBuffers[MAX_PLAYERS][20]; 
 int currentTyping = 0;
 
 
@@ -47,14 +47,14 @@ int roll(){
 }
 Color palette[] = {RED, GREEN, BLUE, ORANGE, PURPLE, GOLD};
 
-/* --------- Helper: smoothstep easing ---------- */
+/* Helper: smoothstep easing */
 static float smoothstep(float x) {
     if (x < 0) return 0;
     if (x > 1) return 1;
     return x*x*(3 - 2*x);
 }
 
-/* --------- Snakes & Ladders placement with validation ---------- */
+/* Snakes & Ladders placement with validation  */
 void snakes_and_ladders(Snake snakes[], Ladder ladders[]){
     int total = SIZE * SIZE;
     int used[1010] = {0}; // assume board <= 1000 cells; increase if needed
@@ -580,11 +580,49 @@ int main(void) {
                 for (int f=0; f<120 && !WindowShouldClose(); f++){
                     BeginDrawing(); EndDrawing();
                 }
+
+                // AUTO SAVE before closing on win   <-- ADDED
+                FILE *autoF = fopen("s_and_l_save.txt", "w");
+                if (autoF) {
+                    fprintf(autoF, "%d\n", np);
+                    fprintf(autoF, "%d\n", currentTurn);
+                    for (int k=0; k<np; k++) {
+                        fprintf(autoF, "%s\n%d\n", players[k].name, players[k].position);
+                    }
+                    for(int k=0;k<N_SNAKES;k++) fprintf(autoF, "%d %d\n", snakes[k].mouth, snakes[k].tail);
+                    for(int k=0;k<N_LADDERS;k++) fprintf(autoF, "%d %d\n", ladders[k].bottom, ladders[k].top);
+                    fclose(autoF);
+                }
+                // END AUTO SAVE
+
                 CloseWindow();
                 return 0;
             }
         }
     }
+
+    // AUTO SAVE on normal close  <-- ADDED
+// AUTO-SAVE ON NORMAL CLOSE (write the REAL snakes/ladders)
+    {
+    FILE *autoF2 = fopen("s_and_l_save.txt", "w");
+    if (autoF2) {
+        fprintf(autoF2, "%d\n", np);
+        fprintf(autoF2, "%d\n", currentTurn);
+
+        for (int k = 0; k < np; k++)
+            fprintf(autoF2, "%s\n%d\n", players[k].name, players[k].position);
+
+        for (int k = 0; k < N_SNAKES; k++)
+            fprintf(autoF2, "%d %d\n", snakes[k].mouth, snakes[k].tail);
+
+        for (int k = 0; k < N_LADDERS; k++)
+            fprintf(autoF2, "%d %d\n", ladders[k].bottom, ladders[k].top);
+
+        fclose(autoF2);
+        }
+    }
+
+    // END AUTO SAVE
 
     CloseWindow();
     return 0;
